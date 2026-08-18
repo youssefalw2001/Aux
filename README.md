@@ -21,7 +21,8 @@ Phase 1 in progress. What works today:
 - ✅ **Voting + reveal UI** — anonymous voting, sequenced reveal, rolling vote counts
 - ✅ Playable demo mode (`/demo`) with simulated players — no server needed
 - ✅ Static export target for GitHub Pages previews
-- ⬜ Story export card (1080×1920)
+- ✅ **Share pipeline** — 1080×1920 captioned card, PNG + video export with audio muxed in
+- ✅ **Daily global prompt** — one prompt worldwide per day
 - ⬜ Stripe group unlock
 - ⬜ Moderation pipeline (classifier, report, media TTL)
 
@@ -85,3 +86,41 @@ Non-negotiable for launch, tracked in `docs/PLAN.md`:
 - Report button in every room
 - Classifier on every upload + hash matching
 - Hard TTL on all media, room-scoped, no permanent retention
+
+## Why the share pipeline exists
+
+The game happens between four people. The share card is the only thing a
+stranger ever sees, so it is the entire growth surface.
+
+Three constraints drive its design:
+
+- **It must work muted.** Most social video is scrolled with sound off, so the
+  caption carries the joke and gets the largest type on the card. A voice-note
+  game whose output is raw audio is structurally unshareable — audio does not
+  travel on social platforms.
+- **It must read at thumbnail size.** Extreme contrast, huge type, and no dead
+  space. Empty middle ground reads as "unfinished" at exactly the size that
+  decides whether anyone stops scrolling, so the layout measures both text
+  blocks and centres the caption + waveform group in whatever room is left.
+- **It must carry the brand implicitly.** Acid-on-black plus the waveform motif
+  is recognisable before the wordmark is read.
+
+Export is fully client-side: draw frames to a canvas, take
+`canvas.captureStream()`, graft the clip's audio track on, and feed the
+combined stream to MediaRecorder. No server, no ffmpeg, no upload. Codec is
+negotiated because Safari will not produce WebM and needs `video/mp4`.
+
+Run `pnpm cards` to regenerate the harness screenshots in `docs/preview/`.
+
+## The daily prompt
+
+One prompt per day, the same worldwide, keyed to UTC midnight.
+
+Wordle's innovation was never the word game — it was that everyone played the
+same puzzle on the same day. That single constraint produces a shared
+conversation, a daily reason to open the app, and a global "top takes" feed
+that is watchable by people who never played. A room-only game has none of
+that: every session is invisible to everyone outside the room.
+
+The prompt is chosen by hashing the day index rather than walking the deck in
+order, so tomorrow's prompt isn't predictable.

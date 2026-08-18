@@ -49,3 +49,6 @@ worker-configuration.d.ts
 
 # static export
 /out
+
+# playwright browsers
+/test-results

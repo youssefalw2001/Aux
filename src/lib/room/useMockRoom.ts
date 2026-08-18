@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { dailyPrompt } from "@/lib/daily";
 import { randomPrompt } from "@/lib/prompts";
 import { MIN_PLAYERS, type Phase, type RoomState } from "./protocol";
 
@@ -69,8 +70,13 @@ export function useMockRoom(myName: string) {
     clearTimers();
     setSubs([]);
     setVotes({});
-    setRound((r) => r + 1);
-    setPrompt(randomPrompt().text);
+    setRound((r) => {
+      const next = r + 1;
+      // Round 1 is always the global daily prompt — that's the shared hook
+      // everyone is playing on the same day. Later rounds are free play.
+      setPrompt(next === 1 ? dailyPrompt().text : randomPrompt().text);
+      return next;
+    });
     setPhase("recording");
   }, [clearTimers]);
 

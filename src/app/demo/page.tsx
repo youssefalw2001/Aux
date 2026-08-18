@@ -5,9 +5,11 @@ import { useState } from "react";
 import { PromptCard } from "@/components/PromptCard";
 import { RecordButton } from "@/components/RecordButton";
 import { RevealStage } from "@/components/RevealStage";
+import { ShareSheet } from "@/components/ShareSheet";
 import { VoteList } from "@/components/VoteList";
 import { WaveformPulse } from "@/components/Waveform";
 import { useRecorder } from "@/lib/audio/useRecorder";
+import { dailyNumber } from "@/lib/daily";
 import { haptic } from "@/lib/haptics";
 import { pop, snap, stagger } from "@/lib/motion";
 import { useMockRoom } from "@/lib/room/useMockRoom";
@@ -107,6 +109,7 @@ function DemoRoom({ myName }: { myName: string }) {
   });
 
   const [sent, setSent] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const send = () => {
     if (!rec.recording) return;
@@ -122,8 +125,18 @@ function DemoRoom({ myName }: { myName: string }) {
   const nextRound = () => {
     rec.reset();
     setSent(false);
+    setShareOpen(false);
     room.advance();
   };
+
+  // Only the local player's clip has real audio in the simulation, so the video
+  // export is offered when they won and falls back to an image otherwise.
+  const winnerId = state.winners[0] ?? null;
+  const winnerSub = state.submissions.find((s) => s.playerId === winnerId);
+  const winnerName =
+    state.players.find((p) => p.id === winnerId)?.name ?? "Someone";
+  const winnerAudio =
+    winnerId === room.playerId ? (rec.recording?.url ?? null) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-12">
@@ -276,8 +289,26 @@ function DemoRoom({ myName }: { myName: string }) {
               myId={room.playerId}
               prompt={state.prompt}
               onNext={nextRound}
+              onShare={winnerSub ? () => setShareOpen(true) : undefined}
             />
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {shareOpen && winnerSub && (
+          <ShareSheet
+            data={{
+              prompt: state.prompt ?? "",
+              authorName: winnerName,
+              votes: winnerSub.votes ?? 0,
+              peaks: winnerSub.peaks,
+              dailyNumber: state.round === 1 ? dailyNumber() : undefined,
+              handle: "aux",
+            }}
+            audioUrl={winnerAudio}
+            onClose={() => setShareOpen(false)}
+          />
         )}
       </AnimatePresence>
     </main>

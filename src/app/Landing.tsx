@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { WaveformPulse } from "@/components/Waveform";
+import {
+  dailyNumber,
+  formatCountdown,
+  msUntilNextDaily,
+} from "@/lib/daily";
 import { haptic } from "@/lib/haptics";
 import { pop, snap, stagger } from "@/lib/motion";
 
@@ -12,6 +18,52 @@ import { pop, snap, stagger } from "@/lib/motion";
  * Deliberately short. The product is the game, not the pitch — every extra
  * section here is a chance to lose someone who arrived from a group chat.
  */
+
+/**
+ * The daily strip. Deliberately the first thing under the hero, because the
+ * daily prompt is the reason to come back — a room-only game gives someone no
+ * reason to ever open the app unless a friend drags them in.
+ */
+function DailyStrip() {
+  /**
+   * Starts as null and fills in after mount. This page is prerendered — in the
+   * static export target the HTML is baked at build time — so seeding the
+   * countdown during render would emit a value that's stale by however long ago
+   * the build ran, and React would discard the server HTML on hydration.
+   */
+  const [remaining, setRemaining] = useState<number | null>(null);
+
+  useEffect(() => {
+    const tick = () => setRemaining(msUntilNextDaily());
+    const raf = requestAnimationFrame(tick);
+    const t = setInterval(tick, 1000);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearInterval(t);
+    };
+  }, []);
+
+  return (
+    <div className="flex items-center justify-between rounded-card border border-acid/30 bg-acid/[0.06] px-5 py-4">
+      <div>
+        <div className="font-mono text-[10px] tracking-[0.22em] text-acid uppercase">
+          Daily #{dailyNumber()}
+        </div>
+        <div className="mt-1 text-xs text-ink-dim">
+          One prompt. Everyone. Worldwide.
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="font-mono text-sm text-ink tabular-nums">
+          {remaining === null ? "—" : formatCountdown(remaining)}
+        </div>
+        <div className="font-mono text-[10px] tracking-widest text-ink-faint uppercase">
+          next drop
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const STEPS = [
   {
@@ -58,6 +110,15 @@ export function Landing({ playHref }: { playHref: string }) {
         className="px-2"
       >
         <WaveformPulse bars={36} />
+      </motion.div>
+
+      {/* ---------- Daily hook ---------- */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ...pop, delay: 0.2 }}
+      >
+        <DailyStrip />
       </motion.div>
 
       {/* ---------- Primary CTA ---------- */}
