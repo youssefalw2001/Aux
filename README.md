@@ -17,8 +17,8 @@ Phase 1 in progress. What works today:
 - ✅ Kinetic-type prompt cards
 - ✅ **Dynamic unfurl card** — live OG image for Instagram DM previews
 - ✅ Room join flow, no auth
-- ⬜ Durable Object room server (realtime presence + rounds)
-- ⬜ Voting + reveal sequence
+- ✅ **Durable Object room server** — realtime presence, async rounds, vote tally
+- ⬜ Voting + reveal UI (server logic done)
 - ⬜ Story export card (1080×1920)
 - ⬜ Stripe group unlock
 - ⬜ Moderation pipeline (classifier, report, media TTL)

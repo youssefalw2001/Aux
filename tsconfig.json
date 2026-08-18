@@ -30,5 +30,12 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    // The worker runs on workerd, not in a browser. Its globals (and the
+    // generated Env/runtime types) conflict with lib.dom, so it gets its own
+    // tsconfig — see worker/tsconfig.json.
+    "worker",
+    "worker-configuration.d.ts"
+  ]
 }

@@ -1,0 +1,21 @@
+{
+  "name": "aux-rooms",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "AuxRoom",
+        "class_name": "AuxRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["AuxRoom"]
+    }
+  ]
+}
