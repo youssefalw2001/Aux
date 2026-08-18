@@ -18,9 +18,17 @@ interface Props {
   round?: number;
   totalRounds?: number;
   className?: string;
+  /** e.g. "Accent challenge" — gives the prompt a recognisable format identity. */
+  format?: string;
 }
 
-export function PromptCard({ prompt, round, totalRounds, className }: Props) {
+export function PromptCard({
+  prompt,
+  round,
+  totalRounds,
+  className,
+  format,
+}: Props) {
   const words = prompt.split(" ");
 
   return (
@@ -37,17 +45,24 @@ export function PromptCard({ prompt, round, totalRounds, className }: Props) {
         className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-acid to-transparent opacity-60"
       />
 
-      {round !== undefined && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-4 flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] text-acid uppercase"
-        >
-          <span className="inline-block size-1.5 rounded-full bg-acid" />
-          Round {round}
-          {totalRounds ? ` of ${totalRounds}` : null}
-        </motion.div>
-      )}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="mb-4 flex flex-wrap items-center gap-2"
+      >
+        {format && (
+          <span className="rounded-pill border border-acid/40 bg-acid/10 px-2.5 py-1 font-mono text-[10px] tracking-[0.18em] text-acid uppercase">
+            {format}
+          </span>
+        )}
+        {round !== undefined && (
+          <span className="flex items-center gap-2 font-mono text-[11px] tracking-[0.2em] text-ink-faint uppercase">
+            <span className="inline-block size-1.5 rounded-full bg-acid" />
+            Round {round}
+            {totalRounds ? ` of ${totalRounds}` : null}
+          </span>
+        )}
+      </motion.div>
 
       <h1 className="display text-[clamp(1.75rem,7vw,2.5rem)] text-ink">
         {words.map((word, i) => (

@@ -1,4 +1,4 @@
-import { FREE_DECK, type Prompt } from "./prompts";
+import { DAILY_ELIGIBLE, type Prompt } from "./prompts";
 
 /**
  * One global prompt per day, the same for everyone, everywhere.
@@ -50,7 +50,9 @@ export function dailyPrompt(now?: Date): Prompt {
   h ^= h >>> 15;
   h = Math.imul(h, 2246822507);
   h ^= h >>> 13;
-  return FREE_DECK[Math.abs(h) % FREE_DECK.length];
+  // Standalone-only: the daily clip is the one strangers see in the global
+  // feed, so it has to be funny with no knowledge of the prompt.
+  return DAILY_ELIGIBLE[Math.abs(h) % DAILY_ELIGIBLE.length];
 }
 
 /** Milliseconds until the next global prompt drops. Drives a countdown. */

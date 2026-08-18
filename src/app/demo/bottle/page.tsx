@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import Link from "next/link";
+import { Aurora } from "@/components/Aurora";
+import { MotionLink } from "@/components/MotionLink";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AnonReveal } from "@/components/AnonReveal";
 import { BottleSpin } from "@/components/BottleSpin";
@@ -13,7 +14,7 @@ import { useRecorder } from "@/lib/audio/useRecorder";
 import { haptic } from "@/lib/haptics";
 import { pop, snap, stagger } from "@/lib/motion";
 import type { PlayerView, SubmissionView } from "@/lib/room/protocol";
-import { bottlePrompt } from "@/lib/prompts";
+import { FORMAT_LABEL, bottlePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 
 /**
@@ -81,9 +82,12 @@ function NameGate({
         className="flex flex-col gap-7"
       >
         <div className="text-center">
-          <Link href="/" className="display text-4xl text-acid text-glow-acid">
+          <MotionLink
+            href="/"
+            className="display text-4xl text-acid text-glow-acid"
+          >
             aux
-          </Link>
+          </MotionLink>
           <h1 className="display mt-4 text-3xl text-ink">Spin the Bottle</h1>
           <p className="mt-3 text-sm leading-relaxed text-ink-dim">
             The bottle picks someone in the room. Everyone records an anonymous
@@ -134,13 +138,20 @@ function BottleRoom({ myName }: { myName: string }) {
   const [subjectId, setSubjectId] = useState<string | null>(null);
   const [lastSubject, setLastSubject] = useState<string | null>(null);
   const [prompt, setPrompt] = useState<string | null>(null);
+  const [format, setFormat] = useState<string | null>(null);
   const [subs, setSubs] = useState<SubmissionView[]>([]);
   const [shareOpen, setShareOpen] = useState(false);
   const [round, setRound] = useState(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const players: PlayerView[] = [
-    { id: ME, name: myName || "You", connected: true, submitted: false, voted: false },
+    {
+      id: ME,
+      name: myName || "You",
+      connected: true,
+      submitted: false,
+      voted: false,
+    },
     ...BOTS.map((b) => ({
       id: b.id,
       name: b.name,
@@ -170,7 +181,11 @@ function BottleRoom({ myName }: { myName: string }) {
 
   const onLanded = (id: string) => {
     setSubjectId(id);
-    setPrompt(bottlePrompt(players.find((p) => p.id === id)?.name ?? "them").text);
+    const chosen = bottlePrompt(
+      players.find((p) => p.id === id)?.name ?? "them",
+    );
+    setPrompt(chosen.text);
+    setFormat(FORMAT_LABEL[chosen.format]);
     later(() => setPhase("recording"), 700);
   };
 
@@ -216,6 +231,7 @@ function BottleRoom({ myName }: { myName: string }) {
     setLastSubject(subjectId);
     setSubjectId(null);
     setPrompt(null);
+    setFormat(null);
     setSubs([]);
     setPhase("spinning");
   };
@@ -227,193 +243,200 @@ function BottleRoom({ myName }: { myName: string }) {
   };
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-12">
-      <Header phase={phase} round={round} />
+    <>
+      <Aurora />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-12">
+        <Header phase={phase} round={round} />
 
-      <AnimatePresence mode="wait">
-        {phase === "lobby" && (
-          <Stage key="lobby">
-            <div className="rounded-card border border-line bg-surface/70 p-6 backdrop-blur-xl">
-              <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
-                In the circle
-              </div>
-              <div className="flex flex-col gap-2">
-                {players.map((p, i) => (
-                  <motion.div
-                    key={p.id}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ ...pop, delay: stagger(i, 0.07) }}
-                    className="flex items-center gap-3"
-                  >
-                    <div className="grid size-9 place-items-center rounded-full bg-surface-2 text-xs font-bold text-ink ring-1 ring-line-bright">
-                      {p.name.slice(0, 1).toUpperCase()}
-                    </div>
-                    <span className="text-sm text-ink">{p.name}</span>
-                    {i === 0 && (
-                      <span className="font-mono text-[10px] tracking-widest text-acid uppercase">
-                        you
-                      </span>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-            <motion.button
-              type="button"
-              onClick={startGame}
-              whileTap={{ scale: 0.97 }}
-              transition={snap}
-              className="glow-acid w-full rounded-pill bg-acid py-4 text-base font-bold text-void"
-            >
-              Spin the bottle
-            </motion.button>
-          </Stage>
-        )}
-
-        {phase === "spinning" && (
-          <Stage key="spinning" center>
-            <BottleSpin
-              players={players}
-              excludeId={lastSubject}
-              onLanded={onLanded}
-              autoStart
-            />
-          </Stage>
-        )}
-
-        {phase === "recording" && (
-          // Centred, not space-between: on a tall viewport `justify-between`
-          // strands the prompt at the top and the button at the bottom with a
-          // dead void between them.
-          <Stage key="recording" center>
-            <PromptCard prompt={prompt ?? ""} round={round} />
-            {subjectId === ME ? (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={pop}
-                className="rounded-card border border-line bg-surface/70 p-7 text-center backdrop-blur-xl"
-              >
+        <AnimatePresence mode="wait">
+          {phase === "lobby" && (
+            <Stage key="lobby">
+              <div className="rounded-card border border-line bg-surface/70 p-6 backdrop-blur-xl">
                 <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
-                  It landed on you
+                  In the circle
+                </div>
+                <div className="flex flex-col gap-2">
+                  {players.map((p, i) => (
+                    <motion.div
+                      key={p.id}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ ...pop, delay: stagger(i, 0.07) }}
+                      className="flex items-center gap-3"
+                    >
+                      <div className="grid size-9 place-items-center rounded-full bg-surface-2 text-xs font-bold text-ink ring-1 ring-line-bright">
+                        {p.name.slice(0, 1).toUpperCase()}
+                      </div>
+                      <span className="text-sm text-ink">{p.name}</span>
+                      {i === 0 && (
+                        <span className="font-mono text-[10px] tracking-widest text-acid uppercase">
+                          you
+                        </span>
+                      )}
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+              <motion.button
+                type="button"
+                onClick={startGame}
+                whileTap={{ scale: 0.97 }}
+                transition={snap}
+                className="glow-acid w-full rounded-pill bg-acid py-4 text-base font-bold text-void"
+              >
+                Spin the bottle
+              </motion.button>
+            </Stage>
+          )}
+
+          {phase === "spinning" && (
+            <Stage key="spinning" center>
+              <BottleSpin
+                players={players}
+                excludeId={lastSubject}
+                onLanded={onLanded}
+                autoStart
+              />
+            </Stage>
+          )}
+
+          {phase === "recording" && (
+            // Centred, not space-between: on a tall viewport `justify-between`
+            // strands the prompt at the top and the button at the bottom with a
+            // dead void between them.
+            <Stage key="recording" center>
+              <PromptCard
+                prompt={prompt ?? ""}
+                round={round}
+                format={format ?? undefined}
+              />
+              {subjectId === ME ? (
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={pop}
+                  className="rounded-card border border-line bg-surface/70 p-7 text-center backdrop-blur-xl"
+                >
+                  <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
+                    It landed on you
+                  </div>
+                  <div className="opacity-40">
+                    <WaveformPulse bars={24} />
+                  </div>
+                  <p className="mt-5 text-sm text-ink-dim">
+                    Everyone else is recording something about you. Sit tight.
+                  </p>
+                  <button
+                    onClick={send}
+                    className="mt-5 rounded-pill bg-acid px-8 py-3 text-sm font-semibold text-void"
+                  >
+                    Let them cook
+                  </button>
+                </motion.div>
+              ) : (
+                <div className="flex flex-col items-center gap-6">
+                  <RecordButton
+                    state={rec.state}
+                    amplitude={rec.amplitude}
+                    progress={rec.progress}
+                    elapsedMs={rec.elapsedMs}
+                    maxDurationMs={rec.maxDurationMs}
+                    onStart={rec.start}
+                    onStop={rec.stop}
+                  />
+                  {rec.state === "complete" && rec.recording && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={pop}
+                      className="flex w-full gap-3"
+                    >
+                      <button
+                        onClick={() => rec.reset()}
+                        className="flex-1 rounded-pill border border-line-bright bg-surface py-4 text-base font-semibold text-ink-dim"
+                      >
+                        Retake
+                      </button>
+                      <button
+                        onClick={send}
+                        className="flex-1 rounded-pill bg-acid py-4 text-base font-bold text-void"
+                      >
+                        Send it
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
+              )}
+            </Stage>
+          )}
+
+          {phase === "waiting" && (
+            <Stage key="waiting" center>
+              <div className="w-full rounded-card border border-line bg-surface/70 p-7 text-center backdrop-blur-xl">
+                <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
+                  Sent · waiting on the circle
                 </div>
                 <div className="opacity-40">
-                  <WaveformPulse bars={24} />
+                  <WaveformPulse bars={26} />
                 </div>
-                <p className="mt-5 text-sm text-ink-dim">
-                  Everyone else is recording something about you. Sit tight.
-                </p>
-                <button
-                  onClick={send}
-                  className="mt-5 rounded-pill bg-acid px-8 py-3 text-sm font-semibold text-void"
-                >
-                  Let them cook
-                </button>
-              </motion.div>
-            ) : (
-              <div className="flex flex-col items-center gap-6">
-                <RecordButton
-                  state={rec.state}
-                  amplitude={rec.amplitude}
-                  progress={rec.progress}
-                  elapsedMs={rec.elapsedMs}
-                  maxDurationMs={rec.maxDurationMs}
-                  onStart={rec.start}
-                  onStop={rec.stop}
-                />
-                {rec.state === "complete" && rec.recording && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={pop}
-                    className="flex w-full gap-3"
-                  >
-                    <button
-                      onClick={() => rec.reset()}
-                      className="flex-1 rounded-pill border border-line-bright bg-surface py-4 text-base font-semibold text-ink-dim"
-                    >
-                      Retake
-                    </button>
-                    <button
-                      onClick={send}
-                      className="flex-1 rounded-pill bg-acid py-4 text-base font-bold text-void"
-                    >
-                      Send it
-                    </button>
-                  </motion.div>
-                )}
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  {players
+                    .filter((p) => p.id !== subjectId)
+                    .map((p) => {
+                      const done = subs.some((s) => s.playerId === p.id);
+                      return (
+                        <span
+                          key={p.id}
+                          className={cn(
+                            "rounded-pill border px-3 py-1.5 text-xs transition-colors",
+                            done
+                              ? "border-acid/50 bg-acid/10 text-acid"
+                              : "border-line text-ink-faint",
+                          )}
+                        >
+                          {p.name} {done ? "✓" : "…"}
+                        </span>
+                      );
+                    })}
+                </div>
               </div>
-            )}
-          </Stage>
-        )}
+            </Stage>
+          )}
 
-        {phase === "waiting" && (
-          <Stage key="waiting" center>
-            <div className="w-full rounded-card border border-line bg-surface/70 p-7 text-center backdrop-blur-xl">
-              <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
-                Sent · waiting on the circle
-              </div>
-              <div className="opacity-40">
-                <WaveformPulse bars={26} />
-              </div>
-              <div className="mt-5 flex flex-wrap justify-center gap-2">
-                {players
-                  .filter((p) => p.id !== subjectId)
-                  .map((p) => {
-                    const done = subs.some((s) => s.playerId === p.id);
-                    return (
-                      <span
-                        key={p.id}
-                        className={cn(
-                          "rounded-pill border px-3 py-1.5 text-xs transition-colors",
-                          done
-                            ? "border-acid/50 bg-acid/10 text-acid"
-                            : "border-line text-ink-faint",
-                        )}
-                      >
-                        {p.name} {done ? "✓" : "…"}
-                      </span>
-                    );
-                  })}
-              </div>
-            </div>
-          </Stage>
-        )}
+          {phase === "reveal" && subjectId && (
+            <Stage key="reveal">
+              <AnonReveal
+                subjectName={subjectName}
+                subjectId={subjectId}
+                submissions={subs}
+                players={players}
+                myId={ME}
+                prompt={prompt}
+                onNext={nextRound}
+                onShare={subs.length ? () => setShareOpen(true) : undefined}
+              />
+            </Stage>
+          )}
+        </AnimatePresence>
 
-        {phase === "reveal" && subjectId && (
-          <Stage key="reveal">
-            <AnonReveal
-              subjectName={subjectName}
-              subjectId={subjectId}
-              submissions={subs}
-              players={players}
-              myId={ME}
-              prompt={prompt}
-              onNext={nextRound}
-              onShare={subs.length ? () => setShareOpen(true) : undefined}
+        <AnimatePresence>
+          {shareOpen && subs.length > 0 && (
+            <ShareSheet
+              data={{
+                prompt: prompt ?? "",
+                authorName: subjectName,
+                votes: subs.length,
+                peaks: subs[0].peaks,
+                handle: "aux",
+              }}
+              audioUrl={subs.find((s) => s.playerId === ME)?.clipUrl ?? null}
+              initialCaption={`what the group actually said about ${subjectName}`}
+              onClose={() => setShareOpen(false)}
             />
-          </Stage>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {shareOpen && subs.length > 0 && (
-          <ShareSheet
-            data={{
-              prompt: prompt ?? "",
-              authorName: subjectName,
-              votes: subs.length,
-              peaks: subs[0].peaks,
-              handle: "aux",
-            }}
-            audioUrl={subs.find((s) => s.playerId === ME)?.clipUrl ?? null}
-            initialCaption={`what the group actually said about ${subjectName}`}
-            onClose={() => setShareOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-    </main>
+          )}
+        </AnimatePresence>
+      </main>
+    </>
   );
 }
 
@@ -451,9 +474,12 @@ function Header({ phase, round }: { phase: Phase; round: number }) {
   return (
     <header className="flex items-center justify-between py-6">
       <div className="flex items-baseline gap-2">
-        <Link href="/" className="display text-2xl text-acid text-glow-acid">
+        <MotionLink
+          href="/"
+          className="display text-2xl text-acid text-glow-acid"
+        >
           aux
-        </Link>
+        </MotionLink>
         <span className="font-mono text-[10px] tracking-[0.2em] text-ink-faint uppercase">
           bottle
         </span>

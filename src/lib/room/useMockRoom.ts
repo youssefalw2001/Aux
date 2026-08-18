@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { dailyPrompt } from "@/lib/daily";
-import { randomPrompt } from "@/lib/prompts";
+import { FORMAT_LABEL, randomPrompt } from "@/lib/prompts";
 import { MIN_PLAYERS, type Phase, type RoomState } from "./protocol";
 
 /**
@@ -51,6 +51,7 @@ export function useMockRoom(myName: string) {
   const [phase, setPhase] = useState<Phase>("lobby");
   const [round, setRound] = useState(0);
   const [prompt, setPrompt] = useState<string | null>(null);
+  const [format, setFormat] = useState<string | null>(null);
   const [subs, setSubs] = useState<Sub[]>([]);
   const [votes, setVotes] = useState<Record<string, string>>({});
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -74,7 +75,9 @@ export function useMockRoom(myName: string) {
       const next = r + 1;
       // Round 1 is always the global daily prompt — that's the shared hook
       // everyone is playing on the same day. Later rounds are free play.
-      setPrompt(next === 1 ? dailyPrompt().text : randomPrompt().text);
+      const chosen = next === 1 ? dailyPrompt() : randomPrompt();
+      setPrompt(chosen.text);
+      setFormat(FORMAT_LABEL[chosen.format]);
       return next;
     });
     setPhase("recording");
@@ -203,6 +206,7 @@ export function useMockRoom(myName: string) {
     status: "open" as const,
     lastError: null,
     myVote: votes[ME] ?? null,
+    format,
     start,
     submit,
     vote,

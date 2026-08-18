@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { Aurora } from "@/components/Aurora";
 import { UpvoteIcon } from "@/components/FeedItem";
+import { MotionLink } from "@/components/MotionLink";
 import { WaveformPulse } from "@/components/Waveform";
 import {
   dailyNumber,
@@ -13,8 +13,7 @@ import {
   msUntilNextDaily,
 } from "@/lib/daily";
 import { getFeed } from "@/lib/feed";
-import { haptic } from "@/lib/haptics";
-import { pop, snap, stagger } from "@/lib/motion";
+import { pop, stagger } from "@/lib/motion";
 
 /**
  * Landing. One job: get someone into a round in one tap.
@@ -145,35 +144,29 @@ function PlayButtons({ playHref }: { playHref: string }) {
       transition={{ ...pop, delay: 0.28 }}
       className="flex flex-col gap-3"
     >
-      <Link href="/demo/bottle" prefetch onClick={() => haptic("tap")}>
-        <motion.span
-          whileTap={{ scale: 0.97 }}
-          transition={snap}
-          className="btn-lit block w-full rounded-pill py-5 text-center text-lg font-bold text-void"
-        >
-          Spin the Bottle
-        </motion.span>
-      </Link>
+      <MotionLink
+        href="/demo/bottle"
+        prefetch
+        className="btn-lit block w-full rounded-pill py-5 text-center text-lg font-bold text-void"
+      >
+        Spin the Bottle
+      </MotionLink>
 
       <div className="grid grid-cols-2 gap-3">
-        <Link href={playHref} prefetch onClick={() => haptic("tick")}>
-          <motion.span
-            whileTap={{ scale: 0.96 }}
-            transition={snap}
-            className="btn-ghost-lit block w-full rounded-pill py-4 text-center text-sm font-semibold text-ink ring-1 ring-line-bright"
-          >
-            Voice Roulette
-          </motion.span>
-        </Link>
-        <Link href="/today" prefetch onClick={() => haptic("tick")}>
-          <motion.span
-            whileTap={{ scale: 0.96 }}
-            transition={snap}
-            className="btn-ghost-lit block w-full rounded-pill py-4 text-center text-sm font-semibold text-ink ring-1 ring-line-bright"
-          >
-            Top takes
-          </motion.span>
-        </Link>
+        <MotionLink
+          href={playHref}
+          prefetch
+          className="btn-ghost-lit block w-full rounded-pill py-4 text-center text-sm font-semibold text-ink ring-1 ring-line-bright"
+        >
+          Voice Roulette
+        </MotionLink>
+        <MotionLink
+          href="/today"
+          prefetch
+          className="btn-ghost-lit block w-full rounded-pill py-4 text-center text-sm font-semibold text-ink ring-1 ring-line-bright"
+        >
+          Top takes
+        </MotionLink>
       </div>
 
       <p className="text-center text-[11px] tracking-[0.18em] text-ink-faint uppercase">
@@ -203,7 +196,7 @@ function Ticker() {
     >
       <div className="marquee-track gap-3">
         {doubled.map((clip, i) => (
-          <Link
+          <MotionLink
             key={`${clip.id}-${i}`}
             href="/today"
             className="flex shrink-0 items-center gap-2.5 rounded-pill border border-line bg-surface/60 px-4 py-2.5 backdrop-blur"
@@ -221,7 +214,7 @@ function Ticker() {
               <UpvoteIcon filled size={9} />
               {clip.votes}
             </span>
-          </Link>
+          </MotionLink>
         ))}
       </div>
     </motion.div>
@@ -260,12 +253,12 @@ function Footer() {
       transition={{ delay: 0.8 }}
       className="flex flex-col items-center gap-3 pb-4 text-center"
     >
-      <Link
+      <MotionLink
         href="/r/PARTY"
         className="font-mono text-[11px] tracking-[0.18em] text-ink-faint uppercase underline decoration-line-bright underline-offset-4"
       >
         See a room invite →
-      </Link>
+      </MotionLink>
     </motion.div>
   );
 }

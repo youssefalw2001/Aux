@@ -32,19 +32,24 @@ export interface FeedClip {
   isDaily: boolean;
 }
 
+/**
+ * Captions are written the way a real one would be: reacting to the AUDIO, not
+ * restating the prompt. That's the whole point of the format — someone scrolling
+ * reads the caption, hears three seconds, and gets it.
+ */
 const CAPTIONS: Array<[string, string, string]> = [
-  ["Nia", "he really said that with his whole chest", "Leave a voicemail breaking up with someone over something extremely petty."],
-  ["Marcus", "the confidence is what kills me", "Say “I'm not drunk” like you are extremely drunk."],
-  ["Yasmin", "she apologised for something she did NOT do", "Record the most convincing fake apology you can manage."],
-  ["Dae", "bro forgot he was being recorded", "Confess to a crime you did not commit, with too much detail."],
-  ["Priya", "not the customer service voice", "Do a customer service voice while delivering genuinely upsetting news."],
-  ["Tobi", "this is going in the group chat forever", "Do your best impression of someone in this group chat."],
-  ["Elif", "the pause before she says it", "Tell them something you've never said out loud."],
-  ["Kwame", "he committed to the bit and lost", "Sell me something in your room like it's a late-night infomercial."],
-  ["Hana", "she started crying laughing halfway", "Describe them as a song. Sing a bit of it."],
-  ["Otto", "the weather forecast for his mental state", "Give a weather forecast for your current emotional state."],
-  ["Sana", "10 seconds of pure chaos", "Hype them up like you're introducing them at a fight."],
-  ["Leo", "he really went for the throat", "Say something nice in the most threatening tone possible."],
+  ["Nia", "the accent did not survive the third sentence", "Order a drive-thru meal in the poshest British accent you own."],
+  ["Marcus", "he really committed to being a GPS having a breakdown", "Be a GPS that has completely given up on you."],
+  ["Yasmin", "she said “we are going down” like a weather update", "Airline safety announcement, except the plane is definitely going down."],
+  ["Dae", "bro narrated a radiator like it was a lion", "Nature documentary narration of whatever is nearest to you."],
+  ["Priya", "the meditation app is threatening me now", "Be a meditation app that is slowly losing its patience with you."],
+  ["Tobi", "auctioneering a broken chair for 40 seconds straight", "Auctioneer. Sell the ugliest thing you can currently see."],
+  ["Elif", "“I'm fine” number five was genuinely upsetting", "Say “I'm fine” five times. Each one less convincing."],
+  ["Kwame", "he made laundry sound like a war crime", "Villain monologue, but your evil plan is about laundry."],
+  ["Hana", "she got through it in ONE breath somehow", "Explain your job in one breath. Go."],
+  ["Otto", "the true crime intro about a stolen yoghurt", "True crime podcast intro, but the crime is extremely petty."],
+  ["Sana", "movie trailer voice for brushing his teeth", "Movie trailer voice. Describe your morning."],
+  ["Leo", "the “no worries” escalation is unmatched", "Say “no worries” three ways: polite, passive aggressive, then unhinged."],
 ];
 
 /** Stable pseudo-random from a string, so the feed doesn't reshuffle on reload. */

@@ -20,6 +20,23 @@ const isPagesBuild = process.env.PAGES_BUILD === "1";
 const repoBase = process.env.PAGES_BASE_PATH ?? "/Aux";
 
 const nextConfig: NextConfig = {
+  /**
+   * Exposed to the client so navigation can adapt to the host.
+   *
+   * This matters because App Router client-side navigation is BROKEN on plain
+   * static hosts: the router fetches RSC payloads via `?_rsc=` query strings,
+   * and a static file server ignores the query and returns the HTML page
+   * instead. The router can't parse that, so it calls preventDefault() on the
+   * click and then silently does nothing — a dead button with no error and no
+   * network request. See MotionLink, which falls back to real <a> navigation
+   * when this flag is set.
+   */
+  env: {
+    NEXT_PUBLIC_STATIC_EXPORT: isPagesBuild ? "1" : "",
+    // Next applies basePath to <Link> automatically but NOT to a raw <a>, so
+    // MotionLink has to prepend it itself on the export target.
+    NEXT_PUBLIC_BASE_PATH: isPagesBuild ? repoBase : "",
+  },
   ...(isPagesBuild
     ? {
         output: "export" as const,

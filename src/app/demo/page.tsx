@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { Aurora } from "@/components/Aurora";
 import { useState } from "react";
 import { PromptCard } from "@/components/PromptCard";
 import { RecordButton } from "@/components/RecordButton";
@@ -30,7 +31,9 @@ export default function DemoPage() {
   const [joined, setJoined] = useState(false);
 
   if (!joined) {
-    return <NameGate name={name} setName={setName} onJoin={() => setJoined(true)} />;
+    return (
+      <NameGate name={name} setName={setName} onJoin={() => setJoined(true)} />
+    );
   }
   return <DemoRoom myName={name} />;
 }
@@ -139,183 +142,191 @@ function DemoRoom({ myName }: { myName: string }) {
     winnerId === room.playerId ? (rec.recording?.url ?? null) : null;
 
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-12">
-      <Header state={state} />
+    <>
+      <Aurora />
+      <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-12">
+        <Header state={state} />
 
-      <AnimatePresence mode="wait">
-        {/* ---------------- LOBBY ---------------- */}
-        {state.phase === "lobby" && (
-          <motion.div
-            key="lobby"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={snap}
-            className="flex flex-1 flex-col justify-center gap-7"
-          >
-            <div className="rounded-card border border-line bg-surface/70 p-6 backdrop-blur-xl">
-              <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
-                In the room
-              </div>
-              <div className="flex flex-col gap-2">
-                {state.players.map((p, i) => (
-                  <motion.div
-                    key={p.id}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ ...pop, delay: stagger(i, 0.07) }}
-                    className="flex items-center gap-3"
-                  >
-                    <div className="grid size-9 place-items-center rounded-full bg-surface-2 text-xs font-bold text-ink ring-1 ring-line-bright">
-                      {p.name.slice(0, 1).toUpperCase()}
-                    </div>
-                    <span className="text-sm text-ink">{p.name}</span>
-                    {i === 0 && (
-                      <span className="font-mono text-[10px] tracking-widest text-acid uppercase">
-                        you
-                      </span>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
-            <motion.button
-              type="button"
-              onClick={() => {
-                haptic("tap");
-                room.start();
-              }}
-              whileTap={{ scale: 0.97 }}
+        <AnimatePresence mode="wait">
+          {/* ---------------- LOBBY ---------------- */}
+          {state.phase === "lobby" && (
+            <motion.div
+              key="lobby"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
               transition={snap}
-              className="w-full rounded-pill bg-acid py-4 text-base font-semibold text-void"
+              className="flex flex-1 flex-col justify-center gap-7"
             >
-              Start round 1
-            </motion.button>
-          </motion.div>
-        )}
-
-        {/* ---------------- RECORDING ---------------- */}
-        {state.phase === "recording" && (
-          <motion.div
-            key="recording"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={snap}
-            className="flex flex-1 flex-col justify-center gap-10"
-          >
-            <PromptCard
-              prompt={state.prompt ?? ""}
-              round={state.round}
-              totalRounds={5}
-            />
-
-            <div className="flex flex-col items-center gap-6">
-              {!sent ? (
-                <>
-                  <RecordButton
-                    state={rec.state}
-                    amplitude={rec.amplitude}
-                    progress={rec.progress}
-                    elapsedMs={rec.elapsedMs}
-                    maxDurationMs={rec.maxDurationMs}
-                    onStart={rec.start}
-                    onStop={rec.stop}
-                  />
-                  {rec.state === "complete" && rec.recording && (
+              <div className="rounded-card border border-line bg-surface/70 p-6 backdrop-blur-xl">
+                <div className="mb-4 font-mono text-[11px] tracking-[0.2em] text-acid uppercase">
+                  In the room
+                </div>
+                <div className="flex flex-col gap-2">
+                  {state.players.map((p, i) => (
                     <motion.div
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={pop}
-                      className="flex w-full gap-3"
+                      key={p.id}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ ...pop, delay: stagger(i, 0.07) }}
+                      className="flex items-center gap-3"
                     >
-                      <button
-                        onClick={() => rec.reset()}
-                        className="flex-1 rounded-pill border border-line-bright bg-surface py-4 text-base font-semibold text-ink-dim"
-                      >
-                        Retake
-                      </button>
-                      <button
-                        onClick={send}
-                        className="flex-1 rounded-pill bg-acid py-4 text-base font-semibold text-void"
-                      >
-                        Send it
-                      </button>
+                      <div className="grid size-9 place-items-center rounded-full bg-surface-2 text-xs font-bold text-ink ring-1 ring-line-bright">
+                        {p.name.slice(0, 1).toUpperCase()}
+                      </div>
+                      <span className="text-sm text-ink">{p.name}</span>
+                      {i === 0 && (
+                        <span className="font-mono text-[10px] tracking-widest text-acid uppercase">
+                          you
+                        </span>
+                      )}
                     </motion.div>
-                  )}
-                </>
-              ) : (
-                <WaitingOnOthers state={state} />
-              )}
-            </div>
-          </motion.div>
-        )}
+                  ))}
+                </div>
+              </div>
 
-        {/* ---------------- VOTING ---------------- */}
-        {state.phase === "voting" && (
-          <motion.div
-            key="voting"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={snap}
-            className="flex-1 pt-2"
-          >
-            <VoteList
-              submissions={state.submissions}
-              players={state.players}
-              myId={room.playerId}
-              votedFor={room.myVote}
-              onVote={room.vote}
+              <motion.button
+                type="button"
+                onClick={() => {
+                  haptic("tap");
+                  room.start();
+                }}
+                whileTap={{ scale: 0.97 }}
+                transition={snap}
+                className="w-full rounded-pill bg-acid py-4 text-base font-semibold text-void"
+              >
+                Start round 1
+              </motion.button>
+            </motion.div>
+          )}
+
+          {/* ---------------- RECORDING ---------------- */}
+          {state.phase === "recording" && (
+            <motion.div
+              key="recording"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={snap}
+              className="flex flex-1 flex-col justify-center gap-10"
+            >
+              <PromptCard
+                prompt={state.prompt ?? ""}
+                round={state.round}
+                totalRounds={5}
+                format={room.format ?? undefined}
+              />
+
+              <div className="flex flex-col items-center gap-6">
+                {!sent ? (
+                  <>
+                    <RecordButton
+                      state={rec.state}
+                      amplitude={rec.amplitude}
+                      progress={rec.progress}
+                      elapsedMs={rec.elapsedMs}
+                      maxDurationMs={rec.maxDurationMs}
+                      onStart={rec.start}
+                      onStop={rec.stop}
+                    />
+                    {rec.state === "complete" && rec.recording && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={pop}
+                        className="flex w-full gap-3"
+                      >
+                        <button
+                          onClick={() => rec.reset()}
+                          className="flex-1 rounded-pill border border-line-bright bg-surface py-4 text-base font-semibold text-ink-dim"
+                        >
+                          Retake
+                        </button>
+                        <button
+                          onClick={send}
+                          className="flex-1 rounded-pill bg-acid py-4 text-base font-semibold text-void"
+                        >
+                          Send it
+                        </button>
+                      </motion.div>
+                    )}
+                  </>
+                ) : (
+                  <WaitingOnOthers state={state} />
+                )}
+              </div>
+            </motion.div>
+          )}
+
+          {/* ---------------- VOTING ---------------- */}
+          {state.phase === "voting" && (
+            <motion.div
+              key="voting"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={snap}
+              className="flex-1 pt-2"
+            >
+              <VoteList
+                submissions={state.submissions}
+                players={state.players}
+                myId={room.playerId}
+                votedFor={room.myVote}
+                onVote={room.vote}
+              />
+            </motion.div>
+          )}
+
+          {/* ---------------- REVEAL ---------------- */}
+          {state.phase === "reveal" && (
+            <motion.div
+              key="reveal"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={snap}
+              className="flex-1 pt-2"
+            >
+              <RevealStage
+                submissions={state.submissions}
+                players={state.players}
+                winners={state.winners}
+                myId={room.playerId}
+                prompt={state.prompt}
+                onNext={nextRound}
+                onShare={winnerSub ? () => setShareOpen(true) : undefined}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {shareOpen && winnerSub && (
+            <ShareSheet
+              data={{
+                prompt: state.prompt ?? "",
+                authorName: winnerName,
+                votes: winnerSub.votes ?? 0,
+                peaks: winnerSub.peaks,
+                dailyNumber: state.round === 1 ? dailyNumber() : undefined,
+                handle: "aux",
+              }}
+              audioUrl={winnerAudio}
+              onClose={() => setShareOpen(false)}
             />
-          </motion.div>
-        )}
-
-        {/* ---------------- REVEAL ---------------- */}
-        {state.phase === "reveal" && (
-          <motion.div
-            key="reveal"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={snap}
-            className="flex-1 pt-2"
-          >
-            <RevealStage
-              submissions={state.submissions}
-              players={state.players}
-              winners={state.winners}
-              myId={room.playerId}
-              prompt={state.prompt}
-              onNext={nextRound}
-              onShare={winnerSub ? () => setShareOpen(true) : undefined}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {shareOpen && winnerSub && (
-          <ShareSheet
-            data={{
-              prompt: state.prompt ?? "",
-              authorName: winnerName,
-              votes: winnerSub.votes ?? 0,
-              peaks: winnerSub.peaks,
-              dailyNumber: state.round === 1 ? dailyNumber() : undefined,
-              handle: "aux",
-            }}
-            audioUrl={winnerAudio}
-            onClose={() => setShareOpen(false)}
-          />
-        )}
-      </AnimatePresence>
-    </main>
+          )}
+        </AnimatePresence>
+      </main>
+    </>
   );
 }
 
-function WaitingOnOthers({ state }: { state: { players: { id: string; name: string; submitted: boolean }[] } }) {
+function WaitingOnOthers({
+  state,
+}: {
+  state: { players: { id: string; name: string; submitted: boolean }[] };
+}) {
   const waiting = state.players.filter((p) => !p.submitted);
   return (
     <motion.div
@@ -354,7 +365,11 @@ function WaitingOnOthers({ state }: { state: { players: { id: string; name: stri
   );
 }
 
-function Header({ state }: { state: { code: string; round: number; phase: string; players: unknown[] } }) {
+function Header({
+  state,
+}: {
+  state: { code: string; round: number; phase: string; players: unknown[] };
+}) {
   const label: Record<string, string> = {
     lobby: "Lobby",
     recording: "Recording",

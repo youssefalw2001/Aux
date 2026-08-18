@@ -16,7 +16,9 @@
     "smoke": "bash scripts/smoke.sh",
     "cards": "bash scripts/card-verify.sh",
     "check:browser": "bash scripts/browser-check.sh",
-    "shots": "bash scripts/page-shots.sh"
+    "shots": "bash scripts/page-shots.sh",
+    "test:clicks": "bash scripts/click-test.sh",
+    "verify": "pnpm typecheck && pnpm lint && bash scripts/prod-verify.sh && bash scripts/pages-verify.sh && bash scripts/click-test.sh && bash scripts/browser-check.sh && bash scripts/room-test.sh"
   },
   "dependencies": {
     "clsx": "^2.1.1",

@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { motion } from "motion/react";
+import { MotionLink } from "@/components/MotionLink";
 import { useState } from "react";
 import { WaveformPulse } from "@/components/Waveform";
 import { haptic } from "@/lib/haptics";
@@ -38,9 +38,9 @@ export function JoinScreen({ room }: { room: RoomPreview }) {
         className="flex flex-col gap-8"
       >
         <div className="flex flex-col items-center gap-3 text-center">
-          <Link href="/" className="display text-3xl text-acid text-glow-acid">
+          <MotionLink href="/" className="display text-3xl text-acid text-glow-acid">
             aux
-          </Link>
+          </MotionLink>
           <div className="font-mono text-[11px] tracking-[0.28em] text-ink-faint uppercase">
             Room {room.code}
           </div>
@@ -129,12 +129,12 @@ export function JoinScreen({ room }: { room: RoomPreview }) {
               Live rooms need the realtime server. On this preview build you can
               play a full round against simulated players instead.
             </p>
-            <Link
+            <MotionLink
               href="/demo"
               className="mt-4 inline-block rounded-pill bg-acid px-6 py-3 text-sm font-semibold text-void"
             >
               Play a round
-            </Link>
+            </MotionLink>
           </motion.div>
         )}
       </motion.div>

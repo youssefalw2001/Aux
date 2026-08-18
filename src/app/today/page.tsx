@@ -1,10 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Aurora } from "@/components/Aurora";
 import { FeedItem } from "@/components/FeedItem";
+import { MotionLink } from "@/components/MotionLink";
 import { dailyNumber, dailyPrompt } from "@/lib/daily";
 import { getFeed, type FeedRange } from "@/lib/feed";
 import { haptic } from "@/lib/haptics";
@@ -53,9 +53,9 @@ export default function TodayPage() {
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-5 pb-40">
         {/* ---------- header ---------- */}
         <header className="flex items-center justify-between py-6">
-          <Link href="/" className="display text-2xl text-acid text-glow-acid">
+          <MotionLink href="/" className="display text-2xl text-acid text-glow-acid">
             aux
-          </Link>
+          </MotionLink>
           <div className="flex items-center gap-2 rounded-pill border border-line bg-surface/60 px-3 py-1.5 backdrop-blur">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-acid opacity-60" />
@@ -153,15 +153,14 @@ export default function TodayPage() {
           down the whole scroll rather than waiting at the bottom. */}
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-void via-void/90 to-transparent pt-10 pb-6">
         <div className="pointer-events-auto mx-auto w-full max-w-md px-5">
-          <Link href="/demo" onClick={() => haptic("tap")}>
-            <motion.span
-              whileTap={{ scale: 0.97 }}
-              transition={snap}
-              className="btn-lit block w-full rounded-pill py-4 text-center text-base font-bold text-void"
-            >
-              Record today&apos;s prompt
-            </motion.span>
-          </Link>
+          {/* MotionLink, not <MotionLink><motion.span whileTap> — that nesting eats
+              the click and the button goes nowhere. See MotionLink. */}
+          <MotionLink
+            href="/demo"
+            className="btn-lit block w-full rounded-pill py-4 text-center text-base font-bold text-void"
+          >
+            Record today&apos;s prompt
+          </MotionLink>
         </div>
       </div>
     </>
