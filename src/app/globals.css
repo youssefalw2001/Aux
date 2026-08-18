@@ -1,26 +1,167 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   AUX — Design Tokens
+   Dark-native. OKLCH throughout for smooth gradients and
+   perceptually even glow ramps. Played at night, on a phone.
+   ============================================================ */
+
+@theme {
+  /* --- Surfaces: cool near-black, not neutral grey --- */
+  --color-void: oklch(0.11 0.012 285);
+  --color-pit: oklch(0.08 0.014 285);
+  --color-surface: oklch(0.16 0.016 285);
+  --color-surface-2: oklch(0.21 0.018 285);
+  --color-line: oklch(0.28 0.02 285);
+  --color-line-bright: oklch(0.38 0.024 285);
+
+  /* --- Ink --- */
+  --color-ink: oklch(0.97 0.004 285);
+  --color-ink-dim: oklch(0.72 0.014 285);
+  --color-ink-faint: oklch(0.52 0.016 285);
+
+  /* --- Accents: acid lime glows hard on near-black --- */
+  --color-acid: oklch(0.88 0.23 128);
+  --color-acid-deep: oklch(0.72 0.21 130);
+  --color-acid-dim: oklch(0.45 0.13 132);
+
+  /* --- Hot magenta: reveals, danger, the losing side --- */
+  --color-hot: oklch(0.71 0.27 352);
+  --color-hot-deep: oklch(0.58 0.25 354);
+
+  /* --- Support --- */
+  --color-cyan: oklch(0.82 0.15 205);
+  --color-amber: oklch(0.83 0.17 78);
+
+  /* --- Type --- */
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* --- Radii: generous, physical --- */
+  --radius-card: 1.75rem;
+  --radius-pill: 999px;
+
+  /* --- Timing. Springs live in JS; these are for CSS-only bits. --- */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ============================================================
+   Base
+   ============================================================ */
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
+  background: var(--color-pit);
+  color-scheme: dark;
+  /* Never let the page rubber-band; this is an app, not a document. */
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  /* Safe areas for notched devices inside the IG webview */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Kill iOS input zoom — 16px minimum on all form controls */
+input,
+textarea,
+select,
+button {
+  font-size: max(16px, 1em);
+  font-family: inherit;
+}
+
+/* Non-selectable by default. This is a UI, not copy. */
+body {
+  -webkit-user-select: none;
+  user-select: none;
+}
+input,
+textarea,
+[data-selectable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+
+/* Grain. Adds tactility so flat panels don't read as flat. */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Acid glow. Layered so it blooms rather than smears. */
+@utility glow-acid {
+  box-shadow:
+    0 0 0 1px oklch(0.88 0.23 128 / 0.5),
+    0 0 12px -2px oklch(0.88 0.23 128 / 0.55),
+    0 0 44px -6px oklch(0.88 0.23 128 / 0.4),
+    0 0 90px -10px oklch(0.88 0.23 128 / 0.2);
+}
+
+@utility glow-hot {
+  box-shadow:
+    0 0 0 1px oklch(0.71 0.27 352 / 0.5),
+    0 0 12px -2px oklch(0.71 0.27 352 / 0.55),
+    0 0 44px -6px oklch(0.71 0.27 352 / 0.4),
+    0 0 90px -10px oklch(0.71 0.27 352 / 0.2);
+}
+
+@utility text-glow-acid {
+  text-shadow:
+    0 0 14px oklch(0.88 0.23 128 / 0.55),
+    0 0 40px oklch(0.88 0.23 128 / 0.28);
+}
+
+/* Display type: tight, punchy, optical-sized */
+@utility display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.94;
+  text-wrap: balance;
+}
+
+/* Full-height that survives mobile browser chrome */
+@utility h-screen-safe {
+  height: 100dvh;
+}
+
+/* ============================================================
+   Motion accessibility — respected globally
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
