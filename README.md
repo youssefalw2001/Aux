@@ -18,7 +18,9 @@ Phase 1 in progress. What works today:
 - ✅ **Dynamic unfurl card** — live OG image for Instagram DM previews
 - ✅ Room join flow, no auth
 - ✅ **Durable Object room server** — realtime presence, async rounds, vote tally
-- ⬜ Voting + reveal UI (server logic done)
+- ✅ **Voting + reveal UI** — anonymous voting, sequenced reveal, rolling vote counts
+- ✅ Playable demo mode (`/demo`) with simulated players — no server needed
+- ✅ Static export target for GitHub Pages previews
 - ⬜ Story export card (1080×1920)
 - ⬜ Stripe group unlock
 - ⬜ Moderation pipeline (classifier, report, media TTL)

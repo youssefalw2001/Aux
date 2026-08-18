@@ -20,6 +20,18 @@ export const alt = "Join the round on aux";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
+/**
+ * Mirrors the page's params so the static export emits matching PNGs.
+ *
+ * `dynamicParams` is deliberately NOT exported: it must be a literal boolean,
+ * so it can't be varied per build target. Omitting it takes the default
+ * (`true`) — arbitrary codes render on demand in the normal build — while
+ * `output: "export"` just emits these two and ignores the rest.
+ */
+export function generateStaticParams() {
+  return [{ code: "DEMO" }, { code: "PARTY" }];
+}
+
 // Deterministic pseudo-random from the room code, so each room's waveform is
 // visually distinct but stable across regenerations.
 function seededBars(seed: string, count: number): number[] {

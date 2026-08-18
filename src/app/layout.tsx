@@ -18,7 +18,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+/**
+ * metadataBase must be an absolute origin or Next emits relative og:image URLs
+ * (and warns at build). Crawlers — Instagram's included — will not resolve a
+ * relative image, so the link unfurls as a bare URL and the funnel dies. Set
+ * NEXT_PUBLIC_SITE_URL per environment.
+ */
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "aux — the voice note party game",
   description:
     "Drop a prompt. Everyone records. The group votes. Play it in your group chat.",
@@ -26,7 +35,9 @@ export const metadata: Metadata = {
     title: "aux — the voice note party game",
     description: "Drop a prompt. Everyone records. The group votes.",
     type: "website",
+    siteName: "aux",
   },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

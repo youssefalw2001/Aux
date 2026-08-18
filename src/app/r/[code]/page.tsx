@@ -13,6 +13,16 @@ import { JoinScreen } from "./JoinScreen";
  * there is no PWA install prompt. Anonymous session + device ID only.
  */
 
+/**
+ * A couple of codes are prerendered so the static export target has something
+ * real to show. Every other code is server-rendered on demand in the normal
+ * build via the default `dynamicParams: true` — which is left implicit because
+ * the field must be a literal and therefore can't vary per build target.
+ */
+export function generateStaticParams() {
+  return [{ code: "DEMO" }, { code: "PARTY" }];
+}
+
 export async function generateMetadata({
   params,
 }: {

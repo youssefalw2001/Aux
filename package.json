@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit && tsc -p worker/tsconfig.json --noEmit",
+    "build:pages": "PAGES_BUILD=1 next build && node scripts/postexport.mjs",
     "dev:worker": "wrangler dev",
     "deploy:worker": "wrangler deploy",
     "cf-typegen": "wrangler types",
