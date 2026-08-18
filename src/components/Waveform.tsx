@@ -59,8 +59,16 @@ export function Waveform({
     >
       {peaks.map((peak, i) => {
         const isActive = i / peaks.length <= played;
-        // Floor at 12% so silence still reads as a waveform, not a gap
-        const height = `${Math.max(12, peak * 100)}%`;
+        /**
+         * Floor at 12% so silence still reads as a waveform rather than a gap.
+         *
+         * Rounded to 2dp deliberately: with `animateIn={false}` Motion commits
+         * the target value as the initial style, and full float precision
+         * serialises differently on the server than on the client
+         * ("42.2082%" vs "42.20821056955852%"), which React reports as a
+         * hydration mismatch and resolves by throwing away the server HTML.
+         */
+        const height = `${(Math.max(0.12, peak) * 100).toFixed(2)}%`;
 
         return (
           <motion.div

@@ -23,6 +23,8 @@ Phase 1 in progress. What works today:
 - ✅ Static export target for GitHub Pages previews
 - ✅ **Share pipeline** — 1080×1920 captioned card, PNG + video export with audio muxed in
 - ✅ **Daily global prompt** — one prompt worldwide per day
+- ✅ **Spin the Bottle** — in-room bottle, anonymous voice notes, opt-in authorship reveal
+- ✅ **Global feed** (`/today`) — hot-ranked top takes, the algorithmic surface
 - ⬜ Stripe group unlock
 - ⬜ Moderation pipeline (classifier, report, media TTL)
 

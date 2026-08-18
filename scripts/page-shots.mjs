@@ -33,8 +33,19 @@ const shot = async (name) => {
 
 /* ---------- landing ---------- */
 await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
-await page.waitForTimeout(1400);
+await page.waitForTimeout(1600);
 await shot("screen-landing");
+await page.evaluate(() => window.scrollTo(0, 900));
+await page.waitForTimeout(900);
+await shot("screen-landing-scrolled");
+
+/* ---------- global feed ---------- */
+await page.goto(`${BASE}/today`, { waitUntil: "networkidle" });
+await page.waitForTimeout(1600);
+await shot("screen-today");
+await page.evaluate(() => window.scrollTo(0, 700));
+await page.waitForTimeout(800);
+await shot("screen-today-scrolled");
 
 /* ---------- spin the bottle ---------- */
 await page.goto(`${BASE}/demo/bottle`, { waitUntil: "networkidle" });

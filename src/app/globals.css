@@ -165,3 +165,136 @@ textarea,
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* ============================================================
+   Elevation & polish utilities
+   ============================================================ */
+
+/**
+ * Gradient hairline border.
+ *
+ * A flat 1px border reads as "wireframe" on dark backgrounds. A gradient
+ * hairline that catches acid at the top edge implies the surface is lit from
+ * somewhere, which is most of what separates a premium dark UI from a cheap
+ * one. Built with a masked pseudo-element so it works on any radius and doesn't
+ * affect layout.
+ */
+@utility card-lit {
+  position: relative;
+  background: color-mix(in oklab, var(--color-surface) 82%, transparent);
+  backdrop-filter: blur(20px);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      160deg,
+      oklch(0.88 0.23 128 / 0.55) 0%,
+      oklch(0.38 0.024 285 / 0.5) 32%,
+      oklch(0.3 0.02 285 / 0.35) 70%,
+      oklch(0.88 0.23 128 / 0.18) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+}
+
+/**
+ * Primary button with an inner top highlight.
+ * The 1px inset light edge is what makes a solid fill read as a physical
+ * surface rather than a coloured rectangle.
+ */
+@utility btn-lit {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    oklch(0.93 0.21 128) 0%,
+    oklch(0.85 0.23 128) 55%,
+    oklch(0.78 0.22 130) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.45),
+    inset 0 -1px 0 oklch(0.4 0.12 130 / 0.35),
+    0 1px 2px oklch(0 0 0 / 0.4),
+    0 10px 30px -8px oklch(0.88 0.23 128 / 0.45);
+}
+
+/** Same treatment, neutral surface. */
+@utility btn-ghost-lit {
+  background: linear-gradient(
+    180deg,
+    oklch(0.24 0.018 285) 0%,
+    oklch(0.18 0.016 285) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.07),
+    0 1px 2px oklch(0 0 0 / 0.3);
+}
+
+/**
+ * Horizontal fade for scrollers and tickers — signals "more content this way"
+ * without a scrollbar.
+ */
+@utility edge-fade-x {
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+}
+
+/* Marquee for the ticker. Duplicated content + 50% translate = seamless loop. */
+@keyframes aux-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@utility marquee-track {
+  display: flex;
+  width: max-content;
+  animation: aux-marquee 38s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+/* Slow drifting bloom for the aurora backdrop. */
+@keyframes aux-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, -4%, 0) scale(1.12);
+  }
+  66% {
+    transform: translate3d(-5%, 5%, 0) scale(0.94);
+  }
+}
+
+@utility drift {
+  animation: aux-drift 26s ease-in-out infinite;
+  will-change: transform;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}

@@ -42,6 +42,8 @@ chk "landing"                 http://localhost:3000/                 200 "Spin t
 chk "landing → bottle link"   http://localhost:3000/                 200 'href="/demo/bottle"'
 chk "landing → roulette link" http://localhost:3000/                 200 'href="/demo"'
 chk "bottle mode"             http://localhost:3000/demo/bottle      200 "Join the circle"
+chk "global feed"             http://localhost:3000/today            200 "Top takes"
+chk "feed → daily prompt"     http://localhost:3000/today            200 "everyone, worldwide"
 # No trailing slash here: trailingSlash is only enabled for the Pages export,
 # so the server target correctly 308s /demo/ → /demo.
 chk "demo"                  http://localhost:3000/demo               200 "voice note party game"

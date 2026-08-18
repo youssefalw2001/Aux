@@ -15,7 +15,8 @@
     "test:room": "bash scripts/room-test.sh",
     "smoke": "bash scripts/smoke.sh",
     "cards": "bash scripts/card-verify.sh",
-    "check:browser": "bash scripts/browser-check.sh"
+    "check:browser": "bash scripts/browser-check.sh",
+    "shots": "bash scripts/page-shots.sh"
   },
   "dependencies": {
     "clsx": "^2.1.1",

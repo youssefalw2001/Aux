@@ -47,6 +47,7 @@ chk "landing → bottle link"   "http://localhost:8090${BASE}/"              200
 chk "landing CTA copy"        "http://localhost:8090${BASE}/"              200 "Spin the Bottle"
 chk "demo page"      "http://localhost:8090${BASE}/demo/"                   200 "voice note party game"
 chk "bottle page"    "http://localhost:8090${BASE}/demo/bottle/"            200 "Join the circle"
+chk "global feed"    "http://localhost:8090${BASE}/today/"                  200 "Top takes"
 chk "room DEMO"      "http://localhost:8090${BASE}/r/DEMO/"                 200 "Room"
 chk "room PARTY"     "http://localhost:8090${BASE}/r/PARTY/"                200 "unlock"
 chk "og png copy"    "http://localhost:8090${BASE}/r/PARTY/opengraph-image.png" 200
