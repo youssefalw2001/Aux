@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { WaveformPulse } from "@/components/Waveform";
@@ -37,7 +38,9 @@ export function JoinScreen({ room }: { room: RoomPreview }) {
         className="flex flex-col gap-8"
       >
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="display text-3xl text-acid text-glow-acid">aux</div>
+          <Link href="/" className="display text-3xl text-acid text-glow-acid">
+            aux
+          </Link>
           <div className="font-mono text-[11px] tracking-[0.28em] text-ink-faint uppercase">
             Room {room.code}
           </div>
@@ -110,14 +113,28 @@ export function JoinScreen({ room }: { room: RoomPreview }) {
           </div>
         ) : (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={pop}
+            className="rounded-card border border-line bg-surface/70 p-5 text-center backdrop-blur-xl"
           >
-            <p className="text-sm text-ink-dim">
+            <p className="text-sm text-ink">
               Joining as{" "}
               <span className="font-semibold text-acid">{name}</span>…
             </p>
+            {/* Live rooms need the Durable Object worker. On the static preview
+                build there's nothing to connect to, so say so rather than
+                spinning forever. */}
+            <p className="mt-3 text-xs leading-relaxed text-ink-dim">
+              Live rooms need the realtime server. On this preview build you can
+              play a full round against simulated players instead.
+            </p>
+            <Link
+              href="/demo"
+              className="mt-4 inline-block rounded-pill bg-acid px-6 py-3 text-sm font-semibold text-void"
+            >
+              Play a round
+            </Link>
           </motion.div>
         )}
       </motion.div>

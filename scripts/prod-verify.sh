@@ -28,7 +28,8 @@ echo "── ARBITRARY code (must work — this is the real product path)"
 chk "room ZQ7X4"            http://localhost:3000/r/ZQ7X4            200 "unlock"
 chk "room ZQ7X4 og image"   http://localhost:3000/r/ZQ7X4/opengraph-image 200
 echo "── other routes"
-chk "landing"               http://localhost:3000/                   200 "Tap to record"
+chk "landing"               http://localhost:3000/                   200 "Play a round"
+chk "landing → demo link"   http://localhost:3000/                   200 'href="/demo"'
 # No trailing slash here: trailingSlash is only enabled for the Pages export,
 # so the server target correctly 308s /demo/ → /demo.
 chk "demo"                  http://localhost:3000/demo               200 "voice note party game"

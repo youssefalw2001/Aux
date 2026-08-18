@@ -21,7 +21,11 @@ done
 
 echo "=== HOME ==="
 curl -s -o /tmp/home.html -w "HTTP %{http_code}\n" http://localhost:3000/
-grep -o "Tap to record" /tmp/home.html | head -1
+grep -o "Play a round" /tmp/home.html | head -1
+
+echo "=== DEMO ==="
+curl -s -o /tmp/demo.html -w "HTTP %{http_code}\n" http://localhost:3000/demo
+grep -o "voice note party game" /tmp/demo.html | head -1
 
 echo "=== ROOM PAGE /r/PARTY ==="
 curl -s -o /tmp/room.html -w "HTTP %{http_code}\n" http://localhost:3000/r/PARTY
