@@ -203,7 +203,7 @@ function DemoRoom({ myName }: { myName: string }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={snap}
-            className="flex flex-1 flex-col justify-between gap-7"
+            className="flex flex-1 flex-col justify-center gap-10"
           >
             <PromptCard
               prompt={state.prompt ?? ""}

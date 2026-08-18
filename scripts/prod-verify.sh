@@ -4,6 +4,16 @@
 set -u
 cd "$(dirname "$0")/.."
 
+# Build the server target explicitly. pages-verify.sh leaves .next configured
+# for `output: export` (trailingSlash, no dynamic routes), so reusing whatever
+# happens to be on disk makes this script fail with a wall of 308s depending on
+# which verify ran last.
+rm -rf .next out
+pnpm exec next build > /tmp/prod-build.log 2>&1
+if [ $? -ne 0 ]; then
+  echo "server build failed:"; tail -25 /tmp/prod-build.log; exit 1
+fi
+
 setsid pnpm exec next start > /tmp/prod.log 2>&1 < /dev/null &
 SRV=$!
 cleanup() { kill -TERM -"$SRV" 2>/dev/null; pkill -f "next-server" 2>/dev/null; }
@@ -28,8 +38,10 @@ echo "── ARBITRARY code (must work — this is the real product path)"
 chk "room ZQ7X4"            http://localhost:3000/r/ZQ7X4            200 "unlock"
 chk "room ZQ7X4 og image"   http://localhost:3000/r/ZQ7X4/opengraph-image 200
 echo "── other routes"
-chk "landing"               http://localhost:3000/                   200 "Play a round"
-chk "landing → demo link"   http://localhost:3000/                   200 'href="/demo"'
+chk "landing"                 http://localhost:3000/                 200 "Spin the Bottle"
+chk "landing → bottle link"   http://localhost:3000/                 200 'href="/demo/bottle"'
+chk "landing → roulette link" http://localhost:3000/                 200 'href="/demo"'
+chk "bottle mode"             http://localhost:3000/demo/bottle      200 "Join the circle"
 # No trailing slash here: trailingSlash is only enabled for the Pages export,
 # so the server target correctly 308s /demo/ → /demo.
 chk "demo"                  http://localhost:3000/demo               200 "voice note party game"

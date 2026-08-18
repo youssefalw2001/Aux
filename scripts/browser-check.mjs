@@ -10,7 +10,7 @@
 import { chromium } from "playwright";
 
 const BASE = process.env.APP_URL ?? "http://localhost:3000";
-const ROUTES = ["/", "/demo", "/r/PARTY", "/dev/card"];
+const ROUTES = ["/", "/demo", "/demo/bottle", "/r/PARTY", "/dev/card"];
 
 const browser = await chromium.launch({ args: ["--no-sandbox"] });
 let failures = 0;

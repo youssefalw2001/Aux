@@ -41,10 +41,12 @@ echo "── serving from ${BASE}"
 chk "landing"        "http://localhost:8090${BASE}/"                        200 "aux"
 # Regression guard: the root MUST link into the game, with basePath applied.
 # It previously rendered a bare record screen with no route forward at all.
-# trailingSlash is on for this target, so the emitted href is "${BASE}/demo/"
-chk "landing → demo link" "http://localhost:8090${BASE}/"                   200 "href=\"${BASE}/demo/\?\""
-chk "landing CTA copy"    "http://localhost:8090${BASE}/"                   200 "Play a round"
+# trailingSlash is on for this target, so hrefs carry a trailing slash
+chk "landing → roulette link" "http://localhost:8090${BASE}/"              200 "href=\"${BASE}/demo/\?\""
+chk "landing → bottle link"   "http://localhost:8090${BASE}/"              200 "href=\"${BASE}/demo/bottle/\?\""
+chk "landing CTA copy"        "http://localhost:8090${BASE}/"              200 "Spin the Bottle"
 chk "demo page"      "http://localhost:8090${BASE}/demo/"                   200 "voice note party game"
+chk "bottle page"    "http://localhost:8090${BASE}/demo/bottle/"            200 "Join the circle"
 chk "room DEMO"      "http://localhost:8090${BASE}/r/DEMO/"                 200 "Room"
 chk "room PARTY"     "http://localhost:8090${BASE}/r/PARTY/"                200 "unlock"
 chk "og png copy"    "http://localhost:8090${BASE}/r/PARTY/opengraph-image.png" 200

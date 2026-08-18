@@ -33,6 +33,38 @@ export const FREE_DECK: Prompt[] = [
   { id: "p15", text: "Give a TED talk intro for the worst decision you made this year.", heat: 3 },
 ];
 
+/**
+ * Spin the Bottle deck.
+ *
+ * Every prompt is directed at someone the bottle landed on — who is, by
+ * definition, in the room and playing. `{name}` is substituted at render time.
+ *
+ * Design rule for this deck: the answer must be something you'd be happy to
+ * have heard out loud by the group. The tension comes from anonymity and from
+ * saying it in your real voice, not from targeting anyone.
+ */
+export const BOTTLE_DECK: Prompt[] = [
+  { id: "b1", text: "Say the nicest thing you can about {name} — but you only get 10 seconds.", heat: 1 },
+  { id: "b2", text: "What's the first thing you noticed about {name}?", heat: 2 },
+  { id: "b3", text: "Tell {name} something you've never said out loud.", heat: 3 },
+  { id: "b4", text: "If {name} texted you at 3am, what would it say?", heat: 2 },
+  { id: "b5", text: "Describe {name} as a song. Sing a bit of it.", heat: 1 },
+  { id: "b6", text: "What's {name}'s most unhinged quality, said lovingly?", heat: 2 },
+  { id: "b7", text: "Give {name} a compliment so specific it's slightly alarming.", heat: 2 },
+  { id: "b8", text: "What would {name}'s villain origin story be?", heat: 1 },
+  { id: "b9", text: "Confess something you did that {name} never found out about.", heat: 3 },
+  { id: "b10", text: "Hype {name} up like you're introducing them at a fight.", heat: 1 },
+  { id: "b11", text: "What does {name} do that everyone notices but nobody mentions?", heat: 2 },
+  { id: "b12", text: "Say something to {name} that would ruin the vibe in the best way.", heat: 3 },
+];
+
+export function bottlePrompt(name: string, exclude: string[] = []): Prompt {
+  const pool = BOTTLE_DECK.filter((p) => !exclude.includes(p.id));
+  const from = pool.length ? pool : BOTTLE_DECK;
+  const chosen = from[Math.floor(Math.random() * from.length)];
+  return { ...chosen, text: chosen.text.replaceAll("{name}", name) };
+}
+
 export function randomPrompt(exclude: string[] = []): Prompt {
   const pool = FREE_DECK.filter((p) => !exclude.includes(p.id));
   const from = pool.length ? pool : FREE_DECK;

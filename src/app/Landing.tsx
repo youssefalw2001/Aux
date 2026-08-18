@@ -128,13 +128,22 @@ export function Landing({ playHref }: { playHref: string }) {
         transition={{ ...pop, delay: 0.25 }}
         className="flex flex-col gap-3"
       >
-        <Link href={playHref} prefetch onClick={() => haptic("tap")}>
+        <Link href="/demo/bottle" prefetch onClick={() => haptic("tap")}>
           <motion.span
             whileTap={{ scale: 0.97 }}
             transition={snap}
             className="glow-acid block w-full rounded-pill bg-acid py-5 text-center text-lg font-bold text-void"
           >
-            Play a round
+            Spin the Bottle
+          </motion.span>
+        </Link>
+        <Link href={playHref} prefetch onClick={() => haptic("tick")}>
+          <motion.span
+            whileTap={{ scale: 0.97 }}
+            transition={snap}
+            className="block w-full rounded-pill border border-line-bright bg-surface py-4 text-center text-base font-semibold text-ink"
+          >
+            Voice Roulette
           </motion.span>
         </Link>
         <p className="text-center text-[11px] tracking-[0.18em] text-ink-faint uppercase">
