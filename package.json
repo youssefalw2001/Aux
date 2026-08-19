@@ -18,7 +18,8 @@
     "check:browser": "bash scripts/browser-check.sh",
     "shots": "bash scripts/page-shots.sh",
     "test:clicks": "bash scripts/click-test.sh",
-    "verify": "pnpm typecheck && pnpm lint && bash scripts/prod-verify.sh && bash scripts/pages-verify.sh && bash scripts/click-test.sh && bash scripts/browser-check.sh && bash scripts/room-test.sh"
+    "verify": "pnpm typecheck && pnpm lint && node scripts/run-audit.mjs && bash scripts/prod-verify.sh && bash scripts/pages-verify.sh && bash scripts/click-test.sh && bash scripts/browser-check.sh && bash scripts/room-test.sh",
+    "test:daily": "node scripts/run-audit.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -37,6 +38,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild": "^0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.1",
     "playwright": "^1.62.1",
